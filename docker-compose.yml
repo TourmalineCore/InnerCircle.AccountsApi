@@ -28,7 +28,7 @@ services:
       - LOGS_PATH=/var/log/dev-accounts-api
       - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Host=accounts-db-debug;port=5432;Database=Accounts
       - HttpUrls__AuthServiceUrl=http://auth-service-api:80
-      - HttpUrls__EmployeeServiceUrl=http://salary-service-api:80/api
+      - HttpUrls__EmployeeServiceUrl=http://salary-service-api:80
     networks:
       - accounts-deb
       - ic-backend-deb
