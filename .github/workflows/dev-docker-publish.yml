@@ -49,4 +49,4 @@ jobs:
             --set "extraSecretEnvVars.AccountValidationOptions__IgnoreCorporateDomainValidationRule=${{ secrets.DEV_IGNORE_CORPORATE_DOMAIN_VALIDATION_RULE }}" \
             "${RELEASE_NAME}" \
             bitnami/aspnet-core
-          kubeconfig: "${{ secrets.dev.KUBECONFIG }}"
+          kubeconfig: "${{ vars.dev.KUBECONFIG }}"
