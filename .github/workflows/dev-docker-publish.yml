@@ -35,7 +35,7 @@ jobs:
         uses: WyriHaximus/github-action-helm3@v3
         with:
           exec: |
-            echo ${{ vars.dev.AUTH_SERVICE_URL }}
+            echo ${vars.dev.AUTH_SERVICE_URL}
             RELEASE_NAME=account-management-api
             helm repo add bitnami https://charts.bitnami.com/bitnami
             helm upgrade --install --namespace dev-inner-circle --create-namespace --values ./Api/ci/values-custom.yaml \
