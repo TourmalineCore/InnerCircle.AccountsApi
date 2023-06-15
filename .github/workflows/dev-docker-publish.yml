@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - develop
-  pull_request:
+      - ci/#863gxmf5j-prepare-to-prod
 
 env:
   GITHUB_REGISTRY: ghcr.io
@@ -43,10 +43,10 @@ jobs:
             --set "ingress.hostname=${{ secrets.DEV_HOST }}" \
             --set "extraSecretEnvVars.ConnectionStrings__DefaultConnection=${{ secrets.DEV_POSTGRESQL_CONNECTION_STRING }}" \
             --set "extraSecretEnvVars.AuthenticationOptions__PublicSigningKey=${{ secrets.DEV_AUTH_PUBLIC_SIGNING_KEY }}" \
-            --set "extraSecretEnvVars.HttpUrls__AuthServiceUrl=${{ secrets.DEV_AUTH_SERVICE_URL }}" \
+            --set "extraSecretEnvVars.HttpUrls__AuthServiceUrl=${{ vars.dev.AUTH_SERVICE_URL }}" \
             --set "extraSecretEnvVars.HttpUrls__EmployeeServiceUrl=${{ secrets.DEV_EMPLOYEE_SERVICE_URL }}" \
             --set "extraSecretEnvVars.AccountValidationOptions__CorporateEmailDomain=${{ secrets.DEV_CORPORATE_EMAIL_DOMAIN }}" \
             --set "extraSecretEnvVars.AccountValidationOptions__IgnoreCorporateDomainValidationRule=${{ secrets.DEV_IGNORE_CORPORATE_DOMAIN_VALIDATION_RULE }}" \
             "${RELEASE_NAME}" \
             bitnami/aspnet-core
-          kubeconfig: "${{ secrets.DEV_KUBECONFIG }}"
+          kubeconfig: "${{ secrets.dev.KUBECONFIG }}"
