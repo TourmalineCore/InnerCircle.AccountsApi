@@ -59,6 +59,7 @@ jobs:
     name: Deploy service to k8s for production environment
     runs-on: ubuntu-22.04
     environment: prod
+    
     steps:
       - name: checkout
         uses: actions/checkout@v1
