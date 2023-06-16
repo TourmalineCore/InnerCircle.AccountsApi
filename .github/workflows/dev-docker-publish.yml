@@ -57,7 +57,6 @@ jobs:
   deploy-to-prod-k8s:
     needs: build-image
     name: Deploy service to k8s for production environment
-    if: github.ref_name == 'ci/#863gxmf5j-prepare-to-prod'
     runs-on: ubuntu-22.04
     environment: prod
     steps:
