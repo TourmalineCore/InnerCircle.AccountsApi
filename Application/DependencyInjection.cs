@@ -35,6 +35,8 @@ public static class DependencyInjection
         services.AddTransient<AccountBlockCommandHandler>();
         services.AddTransient<AccountUnblockCommandHandler>();
 
+        services.AddTransient<FindAccountsWithOnlyOneRoleByRoleQueryHandler>();
+
         services.AddTransient<IClock, Clock>();
 
         return services;

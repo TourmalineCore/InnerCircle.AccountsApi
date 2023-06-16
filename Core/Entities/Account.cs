@@ -91,6 +91,13 @@ public class Account : IEntity
         IsBlocked = false;
     }
 
+    public string GetFullName()
+    {
+        return MiddleName != null 
+            ? $"{LastName} {FirstName} {MiddleName}" 
+            : $"{LastName} {FirstName}";
+    }
+
     private void ValidateIsNotSelfOperation(string callerCorporateEmail)
     {
         if (CorporateEmail == callerCorporateEmail)

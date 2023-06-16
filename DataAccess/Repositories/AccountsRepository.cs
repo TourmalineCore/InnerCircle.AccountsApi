@@ -69,7 +69,7 @@ public class AccountsRepository : IAccountsRepository
         return accounts.Where(account => !account.IsAdmin);
     }
 
-    public Task RemoveAsync(Account account)
+    public async Task RemoveAsync(Account account)
     {
         if (account.IsAdmin)
         {
@@ -77,7 +77,7 @@ public class AccountsRepository : IAccountsRepository
         }
 
         _context.Remove(account);
-        return _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Account account)
@@ -89,5 +89,11 @@ public class AccountsRepository : IAccountsRepository
 
         _context.Update(account);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<Account>> FindWhereOnlyOneRoleAsync(long roleId)
+    {
+        var accounts = await GetAllAsync();
+        return accounts.Where(x => x.AccountRoles.Count == 1 && x.AccountRoles.Exists(ar => ar.RoleId == roleId));
     }
 }

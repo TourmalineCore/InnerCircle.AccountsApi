@@ -18,6 +18,7 @@ public class AccountsController : Controller
     private readonly AccountUpdateCommandHandler _accountUpdateCommandHandler;
     private readonly AccountBlockCommandHandler _accountBlockCommandHandler;
     private readonly AccountUnblockCommandHandler _accountUnblockCommandHandler;
+    private readonly FindAccountsWithOnlyOneRoleByRoleQueryHandler _findAccountsWithOnlyOneRoleByRoleQueryHandler;
 
     public AccountsController(
         GetAccountsQueryHandler getAccountsQueryHandler,
@@ -25,7 +26,8 @@ public class AccountsController : Controller
         AccountUpdateCommandHandler accountUpdateCommandHandler,
         GetAccountByIdQueryHandler getAccountByIdQueryHandler,
         AccountBlockCommandHandler accountBlockCommandHandler,
-        AccountUnblockCommandHandler accountUnblockCommandHandler)
+        AccountUnblockCommandHandler accountUnblockCommandHandler,
+        FindAccountsWithOnlyOneRoleByRoleQueryHandler findAccountsWithOnlyOneRoleByRoleQueryHandler)
     {
         _getAccountsQueryHandler = getAccountsQueryHandler;
         _accountCreationCommandHandler = accountCreationCommandHandler;
@@ -33,6 +35,7 @@ public class AccountsController : Controller
         _getAccountByIdQueryHandler = getAccountByIdQueryHandler;
         _accountBlockCommandHandler = accountBlockCommandHandler;
         _accountUnblockCommandHandler = accountUnblockCommandHandler;
+        _findAccountsWithOnlyOneRoleByRoleQueryHandler = findAccountsWithOnlyOneRoleByRoleQueryHandler;
     }
 
     [RequiresPermission(Permissions.ViewAccounts)]
@@ -69,6 +72,27 @@ public class AccountsController : Controller
                 );
 
             return Ok(account);
+        }
+        catch (Exception ex)
+        {
+            return GetProblem(ex);
+        }
+    }
+
+    [RequiresPermission(Permissions.ViewAccounts)]
+    [HttpGet("findWithOneRole")]
+    public async Task<ActionResult<IEnumerable<AccountWithOnlyOneRoleDto>>> FindAccountsWithOneRoleByRoleAsync([FromQuery] long roleId)
+    {
+        try
+        {
+            var accounts = await _findAccountsWithOnlyOneRoleByRoleQueryHandler.HandleAsync(
+                    new FindAccountsWithOnlyOneRoleByRoleQuery
+                    {
+                        RoleId = roleId,
+                    }
+                );
+
+            return Ok(accounts);
         }
         catch (Exception ex)
         {

@@ -1,3 +1,4 @@
+using Core.Contracts;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Models;
@@ -15,7 +16,7 @@ public class AdminRoleTests
 
     public AdminRoleTests()
     {
-        _rolesRepository = new RolesRepository(new Mock<AccountsDbContext>().Object);
+        _rolesRepository = new RolesRepository(new Mock<AccountsDbContext>().Object, new Mock<IAccountsRepository>().Object);
     }
 
     [Fact]

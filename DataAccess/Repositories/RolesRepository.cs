@@ -11,10 +11,12 @@ namespace DataAccess.Repositories;
 public class RolesRepository : IRolesRepository
 {
     private readonly AccountsDbContext _context;
+    private readonly IAccountsRepository _accountsRepository;
 
-    public RolesRepository(AccountsDbContext context)
+    public RolesRepository(AccountsDbContext context, IAccountsRepository accountsRepository)
     {
         _context = context;
+        _accountsRepository = accountsRepository;
     }
 
     public async Task<long> CreateAsync(Role role)
@@ -54,15 +56,22 @@ public class RolesRepository : IRolesRepository
         return roles.Where(role => !role.IsAdmin);
     }
 
-    public Task RemoveAsync(Role role)
+    public async Task RemoveAsync(Role role)
     {
         if (role.IsAdmin)
         {
             throw new RoleOperationException("Can't remove admin role");
         }
 
+        var accountsWhereOnlyOneCurrentRole = await _accountsRepository.FindWhereOnlyOneRoleAsync(role.Id);
+
+        if (accountsWhereOnlyOneCurrentRole.Count() != 0)
+        {
+            throw new RoleOperationException("Can't remove a role because some accounts have only this role");
+        }
+
         _context.Remove(role);
-        return _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
     }
 
     public Task UpdateAsync(Role role)
