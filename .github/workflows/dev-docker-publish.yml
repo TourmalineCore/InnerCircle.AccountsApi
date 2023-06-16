@@ -29,7 +29,7 @@ jobs:
     name: Deploy service to k8s for development environment
     if: github.ref_name == 'develop'
     runs-on: ubuntu-22.04
-    environment: prod
+    environment: dev
 
     steps:
       - name: checkout
@@ -40,7 +40,7 @@ jobs:
           exec: |
             RELEASE_NAME=account-management-api
             helm repo add bitnami https://charts.bitnami.com/bitnami
-            helm upgrade --install --namespace prod-inner-circle --create-namespace --values ./Api/ci/values-custom.yaml \
+            helm upgrade --install --namespace dev-inner-circle --create-namespace --values ./Api/ci/values-custom.yaml \
             --set "image.tag=${{ github.sha }}" \
             --set "ingress.enabled=true" \
             --set "ingress.hostname=${{ vars.HOST }}" \
@@ -57,7 +57,7 @@ jobs:
   deploy-to-prod-k8s:
     needs: build-image
     name: Deploy service to k8s for production environment
-    if: github.ref_name == 'master'
+    if: github.ref_name == 'ci/#863gxmf5j-prepare-to-prod'
     runs-on: ubuntu-22.04
     environment: prod
 
