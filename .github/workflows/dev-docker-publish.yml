@@ -50,6 +50,7 @@ jobs:
             --set "extraSecretEnvVars.HttpUrls__EmployeeServiceUrl=${{ vars.EMPLOYEE_SERVICE_URL }}" \
             --set "extraSecretEnvVars.AccountValidationOptions__CorporateEmailDomain=${{ vars.CORPORATE_EMAIL_DOMAIN }}" \
             --set "extraSecretEnvVars.AccountValidationOptions__IgnoreCorporateDomainValidationRule=${{ vars.IGNORE_CORPORATE_DOMAIN_VALIDATION_RULE }}" \
+            --set "extraConfigMapEnvVars.ASPNETCORE_ENVIRONMENT=${{ vars.ASP_ENV }}" \
             --set "resources.limits.cpu=${{ vars.APP_CPU_LIMIT }}" \
             --set "resources.limits.memory=${{ vars.APP_MEMORY_LIMIT }}" \
             --set "resources.requests.cpu=${{ vars.APP_CPU_REQUESTS }}" \
@@ -84,6 +85,7 @@ jobs:
             --set "extraSecretEnvVars.HttpUrls__EmployeeServiceUrl=${{ vars.EMPLOYEE_SERVICE_URL }}" \
             --set "extraSecretEnvVars.AccountValidationOptions__CorporateEmailDomain=${{ vars.CORPORATE_EMAIL_DOMAIN }}" \
             --set "extraSecretEnvVars.AccountValidationOptions__IgnoreCorporateDomainValidationRule=${{ vars.IGNORE_CORPORATE_DOMAIN_VALIDATION_RULE }}" \
+            --set "extraConfigMapEnvVars.ASPNETCORE_ENVIRONMENT=${{ vars.ASP_ENV }}" \
             --set "resources.limits.cpu=${{ vars.APP_CPU_LIMIT }}" \
             --set "resources.limits.memory=${{ vars.APP_MEMORY_LIMIT }}" \
             --set "resources.requests.cpu=${{ vars.APP_CPU_REQUESTS }}" \
