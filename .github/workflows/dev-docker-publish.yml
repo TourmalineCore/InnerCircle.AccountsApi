@@ -4,65 +4,90 @@ on:
   push:
     branches:
       - develop
+      - master
       - ci/#863gxmf5j-prepare-to-prod
 
 env:
   GITHUB_REGISTRY: ghcr.io
 
 jobs:
+  # build-image:
+  #   name: Build and push service image
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - name: checkout
+  #       uses: actions/checkout@v1
+  #     - name: Build and push image
+  #       run: |
+  #         echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+  #         docker build -t $GITHUB_REGISTRY/tourmalinecore/inner-circle/account-management-api:latest -t $GITHUB_REGISTRY/tourmalinecore/inner-circle/account-management-api:${{ github.sha }} -f Api/Dockerfile .
+  #         docker push $GITHUB_REGISTRY/tourmalinecore/inner-circle/account-management-api:latest
+  #         docker push $GITHUB_REGISTRY/tourmalinecore/inner-circle/account-management-api:${{ github.sha }}
+
   test:
-    runs-on: ubuntu-latest
-    environment: dev
+    name: test
+    runs-on: ubuntu-22.04
     steps:
-      - name: Step 1 - Echo out a GitHub Actions env variable to the logs
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: test
         run: |
-          echo "${{ vars.HOST }}"
-      - name: Step 2 - Echo out a GitHub Actions env secret to the logs
-        run: |
-          echo "The GitHub Action Secret will be masked:  "
-          echo ${{ secrets.TEST }}
-          echo "Trick to echo GitHub Actions Secret:  "
-          echo ${{ secrets.TEST }} | sed 's/./& /g' 
+          echo ${{github.ref_name}}
+  # deploy-to-dev-k8s:
+  #   needs: build-image
+  #   name: Deploy service to k8s for development environment
+  #   if: github.event_name == 'push'
+  #   runs-on: ubuntu-22.04
+  #   environment: dev
 
-# jobs:
-#   build-image:
-#     name: Build and push service image
-#     runs-on: ubuntu-22.04
-#     steps:
-#       - name: checkout
-#         uses: actions/checkout@v1
-#       - name: Build and push image
-#         run: |
-#           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
-#           docker build -t $GITHUB_REGISTRY/tourmalinecore/inner-circle/account-management-api:latest -t $GITHUB_REGISTRY/tourmalinecore/inner-circle/account-management-api:${{ github.sha }} -f Api/Dockerfile .
-#           docker push $GITHUB_REGISTRY/tourmalinecore/inner-circle/account-management-api:latest
-#           docker push $GITHUB_REGISTRY/tourmalinecore/inner-circle/account-management-api:${{ github.sha }}
-
-#   deploy-to-dev-k8s:
-#     needs: build-image
-#     name: Deploy service to k8s for development environment
-#     if: github.event_name == 'push'
-#     runs-on: ubuntu-22.04
-#     steps:
-#       - name: checkout
-#         uses: actions/checkout@v1
-#       - name: Deploy
-#         uses: WyriHaximus/github-action-helm3@v3
-#         with:
-#           exec: |
-#             echo ${vars.dev.AUTH_SERVICE_URL}
-#             RELEASE_NAME=account-management-api
-#             helm repo add bitnami https://charts.bitnami.com/bitnami
-#             helm upgrade --install --namespace dev-inner-circle --create-namespace --values ./Api/ci/values-custom.yaml \
-#             --set "image.tag=${{ github.sha }}" \
-#             --set "ingress.enabled=true" \
-#             --set "ingress.hostname=${{ secrets.DEV_HOST }}" \
-#             --set "extraSecretEnvVars.ConnectionStrings__DefaultConnection=${{ secrets.DEV_POSTGRESQL_CONNECTION_STRING }}" \
-#             --set "extraSecretEnvVars.AuthenticationOptions__PublicSigningKey=${{ secrets.DEV_AUTH_PUBLIC_SIGNING_KEY }}" \
-#             --set "extraSecretEnvVars.HttpUrls__AuthServiceUrl=${{ vars.dev.AUTH_SERVICE_URL }}" \
-#             --set "extraSecretEnvVars.HttpUrls__EmployeeServiceUrl=${{ secrets.DEV_EMPLOYEE_SERVICE_URL }}" \
-#             --set "extraSecretEnvVars.AccountValidationOptions__CorporateEmailDomain=${{ secrets.DEV_CORPORATE_EMAIL_DOMAIN }}" \
-#             --set "extraSecretEnvVars.AccountValidationOptions__IgnoreCorporateDomainValidationRule=${{ secrets.DEV_IGNORE_CORPORATE_DOMAIN_VALIDATION_RULE }}" \
-#             "${RELEASE_NAME}" \
-#             bitnami/aspnet-core
-#           kubeconfig: "${{ vars.dev.KUBECONFIG }}"
+  #   steps:
+  #     - name: checkout
+  #       uses: actions/checkout@v1
+  #     - name: Deploy
+  #       uses: WyriHaximus/github-action-helm3@v3
+  #       with:
+  #         exec: |
+  #           RELEASE_NAME=account-management-api
+  #           helm repo add bitnami https://charts.bitnami.com/bitnami
+  #           helm upgrade --install --namespace dev-inner-circle --create-namespace --values ./Api/ci/values-custom.yaml \
+  #           --set "image.tag=${{ github.sha }}" \
+  #           --set "ingress.enabled=true" \
+  #           --set "ingress.hostname=${{ vars.HOST }}" \
+  #           --set "extraSecretEnvVars.ConnectionStrings__DefaultConnection=${{ secrets.POSTGRESQL_CONNECTION_STRING }}" \
+  #           --set "extraSecretEnvVars.AuthenticationOptions__PublicSigningKey=${{ vars.PUBLIC_SIGNING_KEY }}" \
+  #           --set "extraSecretEnvVars.HttpUrls__AuthServiceUrl=${{ vars.AUTH_SERVICE_URL }}" \
+  #           --set "extraSecretEnvVars.HttpUrls__EmployeeServiceUrl=${{ vars.EMPLOYEE_SERVICE_URL }}" \
+  #           --set "extraSecretEnvVars.AccountValidationOptions__CorporateEmailDomain=${{ vars.CORPORATE_EMAIL_DOMAIN }}" \
+  #           --set "extraSecretEnvVars.AccountValidationOptions__IgnoreCorporateDomainValidationRule=${{ vars.IGNORE_CORPORATE_DOMAIN_VALIDATION_RULE }}" \
+  #           "${RELEASE_NAME}" \
+  #           bitnami/aspnet-core
+  #         kubeconfig: "${{ secrets.KUBECONFIG }}"
+          
+  # deploy-to-prod-k8s:
+  #   needs: build-image
+  #   name: Deploy service to k8s for development environment
+  #   if: github.event_name == 'push'
+  #   runs-on: ubuntu-22.04
+  #   environment: dev
+  #   steps:
+  #     - name: checkout
+  #       uses: actions/checkout@v1
+  #     - name: Deploy
+  #       uses: WyriHaximus/github-action-helm3@v3
+  #       with:
+  #         exec: |
+  #           RELEASE_NAME=account-management-api
+  #           helm repo add bitnami https://charts.bitnami.com/bitnami
+  #           helm upgrade --install --namespace dev-inner-circle --create-namespace --values ./Api/ci/values-custom.yaml \
+  #           --set "image.tag=${{ github.sha }}" \
+  #           --set "ingress.enabled=true" \
+  #           --set "ingress.hostname=${{ vars.HOST }}" \
+  #           --set "extraSecretEnvVars.ConnectionStrings__DefaultConnection=${{ secrets.POSTGRESQL_CONNECTION_STRING }}" \
+  #           --set "extraSecretEnvVars.AuthenticationOptions__PublicSigningKey=${{ vars.PUBLIC_SIGNING_KEY }}" \
+  #           --set "extraSecretEnvVars.HttpUrls__AuthServiceUrl=${{ vars.AUTH_SERVICE_URL }}" \
+  #           --set "extraSecretEnvVars.HttpUrls__EmployeeServiceUrl=${{ vars.EMPLOYEE_SERVICE_URL }}" \
+  #           --set "extraSecretEnvVars.AccountValidationOptions__CorporateEmailDomain=${{ vars.CORPORATE_EMAIL_DOMAIN }}" \
+  #           --set "extraSecretEnvVars.AccountValidationOptions__IgnoreCorporateDomainValidationRule=${{ vars.IGNORE_CORPORATE_DOMAIN_VALIDATION_RULE }}" \
+  #           "${RELEASE_NAME}" \
+  #           bitnami/aspnet-core
+  #         kubeconfig: "${{ secrets.KUBECONFIG }}"
